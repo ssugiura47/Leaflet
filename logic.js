@@ -18,36 +18,33 @@ L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_toke
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson"
 
 d3.json(url, function(data) {
-  earthquakes = data.features
-  console.log(earthquakes);
-
+  var locations = [];  
+  var earthquakes = data.features
   // Loop through the cities array and create one marker for each city object
   for (var i = 0; i < earthquakes.length; i++) {
     var location = earthquakes[i].geometry.coordinates
-    console.log(location);
-
-    var locations = [];
-
-    if (location){
-      locations.push(location[1], location[0])
+    var longitude = earthquakes[i].geometry.coordinates[0]
+    var latitude = earthquakes[i].geometry.coordinates[1]
+  
+ 
+    if (latitude && longitude){
+      locations.push([latitude, longitude])
     };
-    console.log(locations);
 
-    var magnitude = earthquakes[i].properties.mag
-
-
-    L.circle({
-      fillOpacity: 0.75,
-      color: "white",
-      fillColor: "purple",
-      // Setting our circle's radius equal to the output of our markerSize function
-      // This will make our marker's size proportionate to its population
-      radius: magnitude
-    });
-    // }).bindPopup("<h1>" + cities[i].name + "</h1> <hr> <h3>Population: " + cities[i].population + "</h3>").addTo(myMap); 
-    
-    
   };
+  console.log(locations)
+  for (var i = 0; i < locations.length; i++) {
+    var magnitude = earthquakes[i].properties.mag
+    L.circle(locations, {
+    fillOpacity: 0.75,
+    color: "white",
+    fillColor: "purple",
+    // This will make our marker's size proportionate to its magnitude
+    radius: magnitude
+  }).addTo(myMap);
+  };
+  // }).bindPopup("<h1>" + cities[i].name + "</h1> <hr> <h3>Population: " + cities[i].population + "</h3>").addTo(myMap); 
+  
 });
     // var heatArray = [];
   
